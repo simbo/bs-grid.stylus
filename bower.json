@@ -1,0 +1,16 @@
+{
+  "name": "bs-grid.stylus",
+  "version": "0.1.0",
+  "description": "A responsive CSS grid generator written in Stylus, based on the Bootstrap grid.",
+  "author": "Simon Lepel <simbo@simbo.de>",
+  "keywords": [],
+  "license": {
+    "type": "MIT",
+    "url": "http://simbo.mit-license.org/"
+  },
+  "private": true,
+  "ignore": [
+    "node_modules",
+    "bower_components"
+  ]
+}
