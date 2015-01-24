@@ -22,30 +22,67 @@ $grid-column-scaffold {
     position: relative;
     min-height: 1px; // prevent columns from collapsing when empty
     float: left;
+    box-sizing: border-box;
 }
 
 createGrid(grid) {
 
     grid.column-padding = (grid.gutter-width / 2);
-
-    $grid-row {
-        @extends $grid-row-scaffold;
-        margin-left:  -(grid.column-padding);
-        margin-right: -(grid.column-padding);
+    grid.column-types-properties = {
+        pull: left,
+        push: right,
+        offset: margin-left
     }
 
-    $grid-column {
+    $grid-{grid.row-class} {
+        @extends $grid-row-scaffold;
+        +cache('row-margin-' + grid.column-padding) {
+            margin-left:  -(grid.column-padding);
+            margin-right: -(grid.column-padding);
+        }
+    }
+
+    $grid-{grid.column-class} {
         @extends $grid-column-scaffold;
-        padding-left:  (grid.column-padding);
-        padding-right: (grid.column-padding);
+        +cache('column-padding-' + grid.column-padding) {
+            padding-left:  (grid.column-padding);
+            padding-right: (grid.column-padding);
+        }
     }
 
     .{grid.row-class} {
-        @extends $grid-row;
+        @extends $grid-{grid.row-class};
     }
 
     .{grid.column-class} {
-        @extends $grid-column;
+        @extends $grid-{grid.column-class};
+    }
+
+    for i in 0...(grid.column-count + 1) {
+        column-width = (i / grid.column-count * 100);
+        column-width-percent = column-width > 0 ? unit(column-width, '%') : column-width;
+        if i > 0 {
+            .{grid.column-class}-{i} {
+                @extends $grid-{grid.column-class};
+                +cache('column-width-' + column-width) {
+                    width: column-width-percent;
+                }
+            }
+        }
+        for type, prop in grid.column-types-properties {
+            .{grid.column-class}-{type}-{i} {
+                if (i > 0) or (type == offset) {
+                    +cache('column-' + prop + '-' + column-width) {
+                        {prop}: column-width-percent;
+                    }
+                }
+                else {
+                    +cache('column-' + prop + '-auto') {
+                        {prop}: auto;
+                    }
+                }
+            }
+        }
     }
 
 }
