@@ -1,0 +1,53 @@
+/**
+ * + Grid Framework
+ * =====================================================================
+ */
+
+$grid-clearfix {
+    &:before,
+    &:after {
+        content: ' ';
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+$grid-row-scaffold {
+    @extends $grid-clearfix;
+}
+
+$grid-column-scaffold {
+    position: relative;
+    min-height: 1px; // prevent columns from collapsing when empty
+    float: left;
+}
+
+createGrid(grid) {
+
+    grid.column-padding = (grid.gutter-width / 2);
+
+    $grid-row {
+        @extends $grid-row-scaffold;
+        margin-left:  -(grid.column-padding);
+        margin-right: -(grid.column-padding);
+    }
+
+    $grid-column {
+        @extends $grid-column-scaffold;
+        padding-left:  (grid.column-padding);
+        padding-right: (grid.column-padding);
+    }
+
+    .{grid.row-class} {
+        @extends $grid-row;
+    }
+
+    .{grid.column-class} {
+        @extends $grid-column;
+    }
+
+}
+
+/* = Grid Framework */
