@@ -9,7 +9,8 @@
 // node modules
 var path = require('path'),
     del  = require('del'),
-    gulp = require('gulp');
+    gulp = require('gulp'),
+    autoprefixer = require('autoprefixer-core');
 
 // external data
 var config = require(process.cwd() + '/Config.js'),
@@ -58,6 +59,11 @@ gulp.task('build:css', function() {
         .pipe(g.sourcemaps.init({
             loadMaps: true
         }))
+
+        // pipe through postcss processor
+        .pipe(g.postcss([
+            autoprefixer(config.autoprefixer)
+        ]))
 
         // pipe through csslint if in development mode
         .pipe(g.csslint(config.csslint))

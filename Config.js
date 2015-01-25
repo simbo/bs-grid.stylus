@@ -15,9 +15,20 @@ module.exports = (function(config) {
         return p;
     })({});
 
+    // autoprefixer options
+    config.autoprefixer = {
+        browsers: [
+            'last 2 versions',
+            '> 2%',
+            'Opera 12.1',
+            'Firefox ESR'
+        ]
+    };
+
     // csslint options
     // https://github.com/CSSLint/csslint/wiki/Rules-by-ID
     config.csslint = {
+        'box-sizing': false
     };
 
     // config syync options
