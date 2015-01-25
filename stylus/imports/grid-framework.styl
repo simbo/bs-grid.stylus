@@ -1,90 +1,81 @@
 /**
- * + Grid Framework
+ * bs-grid.stylus
  * =====================================================================
  */
 
-$grid-clearfix {
-    &::before,
-    &::after {
-        content: ' ';
-        display: table;
-    }
-    &::after {
-        clear: both;
-    }
-}
+create-grid(options = {})
 
-$grid-row-scaffold {
-    @extends $grid-clearfix;
-}
+    grid = merge({
+        column-count: 12,
+        prefix: '',
+        row-class: row,
+        column-class: col,
+        gutter-width: 30px,
+        placeholders-only: false,
+        breakpoints: {
+            xs: 0,
+            xs-landscape: 420px,
+            sm: 768px,
+            md: 992px,
+            lg: 1200px,
+            xl: 1800px
+        }
+    }, options)
 
-$grid-column-scaffold {
-    position: relative;
-    min-height: 1px; // prevent columns from collapsing when empty
-    float: left;
-    box-sizing: border-box;
-}
-
-createGrid(grid) {
-
-    grid.column-padding = (grid.gutter-width / 2);
+    grid.row-class = grid.prefix + grid.row-class
+    grid.column-class = grid.prefix + grid.column-class
+    grid.column-padding = (grid.gutter-width / 2)
     grid.column-types-properties = {
         pull: left,
         push: right,
         offset: margin-left
     }
 
-    $grid-{grid.row-class} {
-        @extends $grid-row-scaffold;
-        +cache('row-margin-' + grid.column-padding) {
-            margin-left:  -(grid.column-padding);
-            margin-right: -(grid.column-padding);
-        }
-    }
+    ${grid.row-class}
+        &::before,
+        &::after
+            content: ' '
+            display: table
+        &::after
+            clear: both
+        margin-left: -grid.column-padding
+        margin-right: -grid.column-padding
 
-    $grid-{grid.column-class} {
-        @extends $grid-column-scaffold;
-        +cache('column-padding-' + grid.column-padding) {
-            padding-left:  (grid.column-padding);
-            padding-right: (grid.column-padding);
-        }
-    }
+    ${grid.column-class}
+        position: relative
+        min-height: 1px // prevent columns from collapsing when empty
+        float: left
+        box-sizing: border-box
+        padding-left: grid.column-padding
+        padding-right: grid.column-padding
 
-    .{grid.row-class} {
-        @extends $grid-{grid.row-class};
-    }
+    unless grid.placeholders-only
+        .{grid.row-class}
+            @extends ${grid.row-class}
 
-    .{grid.column-class} {
-        @extends $grid-{grid.column-class};
-    }
+    create-grid-columns(prefix = grid.column-class)
+        for i in 0..grid.column-count
+            column-width = (p = (i / grid.column-count) * 100) > 0 ? unit(p, '%') : p
+            if i > 0
+                ${prefix}-{i}
+                    @extends ${grid.column-class}
+                    width: column-width
+                unless grid.placeholders-only
+                    .{prefix}-{i}
+                        @extends ${prefix}-{i}
+            for type, prop in grid.column-types-properties
+                ${prefix}-{type}-{i}
+                    {prop}: (i > 0) or (type == offset) ? column-width : auto
+                unless grid.placeholders-only
+                    .{prefix}-{type}-{i}
+                        @extends ${prefix}-{type}-{i}
 
-    for i in 0...(grid.column-count + 1) {
-        column-width = (i / grid.column-count * 100);
-        column-width-percent = column-width > 0 ? unit(column-width, '%') : column-width;
-        if i > 0 {
-            .{grid.column-class}-{i} {
-                @extends $grid-{grid.column-class};
-                +cache('column-width-' + column-width) {
-                    width: column-width-percent;
-                }
-            }
-        }
-        for type, prop in grid.column-types-properties {
-            .{grid.column-class}-{type}-{i} {
-                if (i > 0) or (type == offset) {
-                    +cache('column-' + prop + '-' + column-width) {
-                        {prop}: column-width-percent;
-                    }
-                }
-                else {
-                    +cache('column-' + prop + '-auto') {
-                        {prop}: auto;
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-/* = Grid Framework */
+    if type-of(grid.breakpoints) == 'object'
+        for key, breakpoint in grid.breakpoints
+            if remove-unit(breakpoint) > 0
+                @media (min-width: breakpoint)
+                    create-grid-columns(grid.column-class + '-' + key)
+            else
+                create-grid-columns(grid.column-class + '-' + key)
+    else
+        create-grid-columns()
