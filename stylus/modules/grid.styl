@@ -38,8 +38,8 @@ create-grid(options = {})
             display: table
         &::after
             clear: both
-        margin-left: -grid.column-padding
-        margin-right: -grid.column-padding
+        margin-left: -(grid.column-padding)
+        margin-right: -(grid.column-padding)
 
     ${grid.column-class}
         position: relative
