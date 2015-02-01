@@ -3,6 +3,14 @@
  * =====================================================================
  */
 
+grid-placeholder-cache = {}
+
+grid-placeholder(key)
+    unless key in grid-placeholder-cache
+        grid-placeholder-cache[key] = length(grid-placeholder-cache)
+        ${key}
+            {block}
+
 create-grid(options = {})
 
     grid = merge({
