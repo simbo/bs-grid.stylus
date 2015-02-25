@@ -8,6 +8,7 @@
     "type": "MIT",
     "url": "http://simbo.mit-license.org/"
   },
+  "main": "stylus/modules/grid.styl",
   "private": true,
   "ignore": [
     "node_modules",
